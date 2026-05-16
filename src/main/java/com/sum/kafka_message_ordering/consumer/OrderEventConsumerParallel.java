@@ -30,18 +30,29 @@ public class OrderEventConsumerParallel {
 
         for (ConsumerRecord<String, OrderEvent> record : records) {
 
-            executor
-                    // .computeIfAbsent(record.partition(), p -> Executors.newSingleThreadExecutor())
-                    .submit(() -> {
-                        OrderEvent event = record.value();
+            // executor.submit(() -> {
+            //     OrderEvent event = record.value();
 
-                        System.out.printf("CONSUMER (parallel) -> partition=%d offset=%d orderId=%s seq=%d event=%s%n",
-                                record.partition(),
-                                record.offset(),
-                                event.orderId(),
-                                event.seq(),
-                                event.eventType());
-                    });
+            //     System.out.printf("CONSUMER (parallel) -> partition=%d offset=%d orderId=%s seq=%d event=%s%n",
+            //             record.partition(),
+            //             record.offset(),
+            //             event.orderId(),
+            //             event.seq(),
+            //             event.eventType());
+            // });
+
+            partitionExecutors
+                .computeIfAbsent(record.partition(), p -> Executors.newSingleThreadExecutor())
+                .submit(() -> {
+                    OrderEvent event = record.value();
+
+                    System.out.printf("CONSUMER (parallel) -> partition=%d offset=%d orderId=%s seq=%d event=%s%n",
+                            record.partition(),
+                            record.offset(),
+                            event.orderId(),
+                            event.seq(),
+                            event.eventType());
+                });
         }
     }
 

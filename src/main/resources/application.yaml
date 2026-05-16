@@ -1,0 +1,27 @@
+spring:
+    application:
+        name: kafka-message-ordering
+    
+    config:
+        import: optional:file:.env[.properties]
+
+    kafka:
+        bootstrap-servers: 
+            - localhost:9092
+        producer:
+            key-serializer: org.apache.kafka.common.serialization.StringSerializer
+            value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+            properties:
+                partitioner.class: org.apache.kafka.clients.producer.RoundRobinPartitioner
+        consumer:
+            group-id: order-group
+            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+            properties:
+                spring.json.trusted.packages: "*"
+        # listener:
+        #     type: BATCH
+
+order:
+    processing:
+        topic-name: order-events

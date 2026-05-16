@@ -19,19 +19,19 @@ public class OrderEventConsumerParallel {
             .newFixedThreadPool(4);
 
 
-//     @KafkaListener(topics = "order-events",
-//             groupId = "order-group"
-// //            properties = {
-// //                    "max.poll.records=500"
-// //            }
-//     )
+    @KafkaListener(topics = "order-events",
+            groupId = "order-group"
+//            properties = {
+//                    "max.poll.records=500"
+//            }
+    )
     public void consumeBatch(List<ConsumerRecord<String, OrderEvent>> records) {
         Map<Integer, ExecutorService> partitionExecutors = new ConcurrentHashMap<>();
 
         for (ConsumerRecord<String, OrderEvent> record : records) {
 
-            partitionExecutors
-                    .computeIfAbsent(record.partition(), p -> Executors.newSingleThreadExecutor())
+            executor
+                    // .computeIfAbsent(record.partition(), p -> Executors.newSingleThreadExecutor())
                     .submit(() -> {
                         OrderEvent event = record.value();
 
